@@ -1,0 +1,118 @@
+﻿<Page
+    x:Class="FEApp.Controls.File_Explorer_View.FileExplorerView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:models="using:FEApp.Models"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <!-- Menu flyout when right clicking on the AdaptiveGridView -->
+        <MenuFlyout x:Key="GridFlyout">
+            <MenuFlyoutItem Text="Refresh" 
+                            Icon="Refresh" 
+                            Command="{x:Bind RefreshCommand}"
+                            x:Name="RefreshFlyoutItem"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Paste" 
+                            Icon="Paste" 
+                            Command="{x:Bind PasteCommand}" 
+                            x:Name="PasteFlyoutItem">
+            </MenuFlyoutItem>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutSubItem Text="New" 
+                               Icon="Add"
+                               x:Name="CreateFlyoutItem">
+                <MenuFlyoutItem Text="Folder" 
+                                Icon="Folder"
+                                Command="{x:Bind CreateNewFolderCommand}"
+                                x:Name="FolderFlyoutItem"/>
+                <MenuFlyoutItem Text="File" 
+                                Icon="Preview" 
+                                Command="{x:Bind CreateNewFileCommand}"
+                                x:Name="FileFlyoutItem"/>
+            </MenuFlyoutSubItem>
+        </MenuFlyout>
+
+        <!-- Menu flyout when right clicking an item -->
+        <MenuFlyout x:Key="FileItemFlyout" 
+                    Opening="FileItemFlyout_Opening">
+            <MenuFlyoutItem Text="Make archive" 
+                            Command="{x:Bind MakeArchiveCommand}"
+                            x:Name="MakeArchiveFlyoutItem"
+                            Icon="OpenFile"/>
+            <MenuFlyoutItem Text="Extract archive" 
+                            Command="{x:Bind ExtractArchiveCommand}"
+                            x:Name="ExtractArchiveFlyoutItem"
+                            Icon="MoveToFolder"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Copy" 
+                            Icon="Copy" 
+                            Command="{x:Bind CopyCommand}"
+                            x:Name="CopyFlyoutItem">
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Text="Copy location" 
+                            Icon="Link" 
+                            Command="{x:Bind CopyPathCommand}"
+                            x:Name="CopyLocationFlyoutItem"/>
+            <MenuFlyoutSeparator/>
+            <MenuFlyoutItem Text="Delete" 
+                            Icon="Delete" 
+                            Command="{x:Bind DeleteCommand}"
+                            x:Name="DeleteFlyoutItem">
+            </MenuFlyoutItem>
+            <MenuFlyoutItem Text="Rename" 
+                            Icon="Rename" 
+                            Command="{x:Bind RenameCommand}"
+                            x:Name="RenameFlyoutItem">
+            </MenuFlyoutItem>
+        </MenuFlyout>
+
+        <!-- Item template of files/folders grid -->
+        <DataTemplate x:Key="FilesGridItemTemplate" 
+                      x:DataType="models:FileItem">
+            <GridViewItem ContextFlyout="{StaticResource FileItemFlyout}">
+                <ToolTipService.ToolTip>
+                    <ToolTip Content="{Binding Name}" Placement="Top"/>
+                </ToolTipService.ToolTip>
+                <StackPanel 
+                    Opacity="{Binding Opacity}" 
+                    Spacing="5" 
+                    Margin="10">
+                    <Image Source="{Binding Icon}" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Name}" 
+                               Style="{ThemeResource CaptionTextBlockStyle}" 
+                               TextTrimming="CharacterEllipsis" 
+                               TextWrapping="NoWrap" 
+                               Grid.Column="1" 
+                               VerticalAlignment="Bottom" 
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </GridViewItem>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <controls:AdaptiveGridView
+                Grid.Row="1" 
+                ItemClick="FilesGrid_ItemClick"
+                x:Name="FilesGrid"
+                DesiredWidth="125"
+                StretchContentForSingleRow="False"
+                Padding="10"
+                IsItemClickEnabled="True"
+                SelectionMode="Extended"
+                SelectionChanged="FilesGrid_SelectionChanged"
+                ContextFlyout="{StaticResource GridFlyout}"
+                ItemTemplate="{StaticResource FilesGridItemTemplate}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+        </controls:AdaptiveGridView>
+        <TextBlock x:Name="EmptyFolderText" Visibility="Collapsed" Text="This folder is empty." Opacity="0.7" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    </Grid>
+</Page>

@@ -273,7 +273,12 @@ namespace FEApp.Controls.File_Explorer_View
         {
             try
             {
-                return Directory.GetParent(Source) != null;
+                if (Source != "ExternalStorageDevices".GetLocalized())
+                {
+                    return Directory.GetParent(Source) != null;
+                }
+                else 
+                    return false;
             }
             catch
             {
@@ -299,10 +304,16 @@ namespace FEApp.Controls.File_Explorer_View
                 {
                     Navigate(parent.ToString()); // Navigates to the parent directory
                 }
+                else 
+                {
+                    NavigateToDrives();
+                }
+
             }
             catch (Exception ex)
             {
-                HandleNavigationFail(new FileNavigationArgs(Source), ex);
+                NavigateToDrives();
+                //HandleNavigationFail(new FileNavigationArgs(Source), ex);
             }
         }
 
@@ -344,9 +355,10 @@ namespace FEApp.Controls.File_Explorer_View
                 List<string> devices = new List<string>(removabledevices);
                 devices.AddRange(await StorageUtils.GetPermanentDrives());
                 devices.Sort();
+
                 if (devices.Count > 0)
                 {
-                    Source = "C:\\"; // Avoid NullReferenceException when going back
+                    Source = "ExternalStorageDevices".GetLocalized(); // Avoid NullReferenceException when going back
                 }
 
                 foreach (string device in devices)
